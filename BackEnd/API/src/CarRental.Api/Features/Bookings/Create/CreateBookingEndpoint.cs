@@ -1,5 +1,4 @@
 using System.Data;
-using System.Security.Claims;
 using CarRental.Domain.Entities;
 using CarRental.Domain.Enums;
 using CarRental.Infrastructure.Persistence;
@@ -25,7 +24,7 @@ public class CreateBookingEndpoint : Endpoint<CreateBookingRequest, BookingRespo
 
     public override async Task HandleAsync(CreateBookingRequest req, CancellationToken ct)
     {
-        var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var customerId = User.FindFirst("sub")?.Value!;
 
         await using var tx = await _db.Database.BeginTransactionAsync(IsolationLevel.Serializable, ct);
         try

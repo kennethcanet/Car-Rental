@@ -18,7 +18,7 @@ public static class InfrastructureServiceExtensions
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
         });
 
-        services.AddIdentity<AppUser, AppRole>(options =>
+        services.AddIdentityCore<AppUser>(options =>
         {
             options.Password.RequireDigit = true;
             options.Password.RequiredLength = 8;
@@ -27,6 +27,7 @@ public static class InfrastructureServiceExtensions
             options.User.RequireUniqueEmail = true;
             options.SignIn.RequireConfirmedEmail = false;
         })
+        .AddRoles<AppRole>()
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 

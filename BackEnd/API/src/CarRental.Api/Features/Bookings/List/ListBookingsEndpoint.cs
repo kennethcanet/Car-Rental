@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CarRental.Infrastructure.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,7 @@ public class ListBookingsEndpoint : EndpointWithoutRequest<List<BookingResponse>
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirst("sub")?.Value!;
         var isAdmin = User.IsInRole(RoleNames.Admin);
 
         var query = _db.Bookings.Include(b => b.Vehicle).AsQueryable();

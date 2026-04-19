@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CarRental.Infrastructure.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +27,7 @@ public class GetBookingByIdEndpoint : Endpoint<GetBookingByIdRequest, BookingRes
 
         if (booking is null) { await Send.NotFoundAsync(ct); return; }
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirst("sub")?.Value!;
         if (booking.CustomerId != userId && !User.IsInRole(RoleNames.Admin))
         {
             await Send.ForbiddenAsync(ct);

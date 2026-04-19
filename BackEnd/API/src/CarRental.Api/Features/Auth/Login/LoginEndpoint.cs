@@ -39,7 +39,8 @@ public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
         }
 
         var roles = await _userManager.GetRolesAsync(user);
-        var jwtExpiry = DateTime.UtcNow.AddMinutes(15);
+        var expiryMinutes = _config.GetValue<int>("Jwt:AccessTokenExpiryMinutes", 15);
+        var jwtExpiry = DateTime.UtcNow.AddMinutes(expiryMinutes);
 
         var accessToken = JwtBearer.CreateToken(o =>
         {

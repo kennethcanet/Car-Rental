@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using CarRental.Domain.Enums;
 using CarRental.Infrastructure.Persistence;
 using FastEndpoints;
@@ -26,7 +25,7 @@ public class CancelBookingEndpoint : Endpoint<CancelBookingRequest>
         var booking = await _db.Bookings.FirstOrDefaultAsync(b => b.Id == req.Id, ct);
         if (booking is null) { await Send.NotFoundAsync(ct); return; }
 
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var userId = User.FindFirst("sub")?.Value!;
         if (booking.CustomerId != userId && !User.IsInRole(RoleNames.Admin))
         {
             await Send.ForbiddenAsync(ct);

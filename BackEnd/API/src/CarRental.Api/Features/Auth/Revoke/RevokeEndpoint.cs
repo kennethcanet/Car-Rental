@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using CarRental.Infrastructure.Persistence;
@@ -25,7 +24,7 @@ public class RevokeEndpoint : Endpoint<RevokeRequest>
     public override async Task HandleAsync(RevokeRequest req, CancellationToken ct)
     {
         var tokenHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(req.RefreshToken)));
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirst("sub")?.Value;
 
         var storedToken = await _db.RefreshTokens
             .FirstOrDefaultAsync(rt => rt.TokenHash == tokenHash && rt.UserId == userId, ct);

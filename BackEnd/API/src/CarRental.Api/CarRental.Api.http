@@ -1,21 +1,34 @@
 @host = http://localhost:5250
 
-# After login, paste the accessToken value here
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NzY2MTMyNDMsImlhdCI6MTc3NjYxMjM0NCwic3ViIjoiMTM5MGNjNTMtNzQyNS00YjU0LThhNWItYTQ4NDllYmNmYWY1IiwiZW1haWwiOiJqYW5lLmRvZUBleGFtcGxlLmNvbSIsImZpcnN0TmFtZSI6IkphbmUiLCJyb2xlIjoiQ3VzdG9tZXIiLCJuYmYiOjE3NzY2MTIzNDV9.QUQrdjYITH8CqK0UTxhfMW8E5Ryn0FVEhigx0lBsxGU
-@refreshToken = tF6YQZPjWfZ+l1QlezP0dhwNp6XxCkVqoiHwCQ/Gxdv/AWWcsTpGb1bwBf4kXplmbuRFn+ADBkDl4pyx2PBqow==
+# ── Tokens (auto-set after running the Login requests below) ─────────────────
+@adminToken   = {{loginAdmin.response.body.$.accessToken}}
+@adminRefresh = {{loginAdmin.response.body.$.refreshToken}}
+@accessToken  = {{loginCustomer.response.body.$.accessToken}}
+@refreshToken = {{loginCustomer.response.body.$.refreshToken}}
 
-# After creating resources, paste IDs here
-@locationId = 00000000-0000-0000-0000-000000000000
-@vehicleId   = 00000000-0000-0000-0000-000000000000
-@bookingId   = 00000000-0000-0000-0000-000000000000
+# ── Resource IDs (auto-set after running the Create requests below) ───────────
+@locationId = {{createLocation.response.body.$.id}}
+@vehicleId  = {{createVehicle.response.body.$.id}}
+@bookingId  = {{createBooking.response.body.$.id}}
 
 
 ### ─────────────────────────────────────────────
 ###  AUTH
 ### ─────────────────────────────────────────────
 
-### Register
-# POST /auth/register → 201 { "userId": "...", "email": "..." }
+### Login — Dev Admin  (seeded automatically in Development)
+# @name loginAdmin
+POST {{host}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@carrental.dev",
+  "password": "Admin1234!"
+}
+
+###
+
+### Register — Customer
 POST {{host}}/auth/register
 Content-Type: application/json
 
@@ -28,8 +41,8 @@ Content-Type: application/json
 
 ###
 
-### Login
-# POST /auth/login → 200 { "accessToken", "refreshToken", "accessTokenExpiry", "userId", "email", "firstName", "lastName", "roles" }
+### Login — Customer
+# @name loginCustomer
 POST {{host}}/auth/login
 Content-Type: application/json
 
@@ -41,7 +54,6 @@ Content-Type: application/json
 ###
 
 ### Refresh token
-# POST /auth/refresh → 200 { "accessToken", "refreshToken", "accessTokenExpiry" }
 POST {{host}}/auth/refresh
 Content-Type: application/json
 
@@ -51,8 +63,7 @@ Content-Type: application/json
 
 ###
 
-### Revoke token  (authenticated)
-# POST /auth/revoke → 204
+### Revoke token
 POST {{host}}/auth/revoke
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -66,28 +77,26 @@ Authorization: Bearer {{accessToken}}
 ###  LOCATIONS
 ### ─────────────────────────────────────────────
 
-### List all locations (anonymous)
-# GET /locations → 200 [ { "id", "name", "address", "city", "country" }, ... ]
+### List all locations
 GET {{host}}/locations
 Accept: application/json
 
 ###
 
-### Get location by ID (anonymous)
-# GET /locations/{id} → 200 { "id", "name", "address", "city", "country" }
+### Get location by ID
 GET {{host}}/locations/{{locationId}}
 Accept: application/json
 
 ###
 
 ### Create location  (Admin)
-# POST /locations → 201 { "id", "name", "address", "city", "country" }
+# @name createLocation
 POST {{host}}/locations
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 {
-  "name": "Manila Airport Branch",
+  "name": "Manila Airport Branch 2",
   "address": "NAIA Terminal 3, Pasay",
   "city": "Manila",
   "country": "Philippines"
@@ -96,10 +105,9 @@ Authorization: Bearer {{accessToken}}
 ###
 
 ### Update location  (Admin)
-# PUT /locations/{id} → 200 { "id", "name", "address", "city", "country" }
 PUT {{host}}/locations/{{locationId}}
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 {
   "name": "Manila Airport Branch (Updated)",
@@ -111,17 +119,16 @@ Authorization: Bearer {{accessToken}}
 ###
 
 ### Delete location  (Admin)
-# DELETE /locations/{id} → 204  (409 if location has active vehicles)
+# 409 if location has active vehicles
 DELETE {{host}}/locations/{{locationId}}
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 
 ### ─────────────────────────────────────────────
 ###  VEHICLES
 ### ─────────────────────────────────────────────
 
-### List vehicles with filters (anonymous)
-# GET /vehicles → 200 { "items": [...], "page", "pageSize", "totalCount" }
+### List vehicles
 GET {{host}}/vehicles?page=1&pageSize=10
 Accept: application/json
 
@@ -139,18 +146,17 @@ Accept: application/json
 
 ###
 
-### Get vehicle by ID (anonymous)
-# GET /vehicles/{id} → 200 { "id", "make", "model", "year", "category", "dailyRate", "description", "location": {...}, "images": [...] }
+### Get vehicle by ID
 GET {{host}}/vehicles/{{vehicleId}}
 Accept: application/json
 
 ###
 
 ### Create vehicle  (Admin)
-# POST /vehicles → 201 { "id", "make", "model", "year", "category", "dailyRate", "locationId", "locationName", "firstImageKey" }
+# @name createVehicle
 POST {{host}}/vehicles
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 {
   "make": "Toyota",
@@ -165,10 +171,9 @@ Authorization: Bearer {{accessToken}}
 ###
 
 ### Update vehicle  (Admin)
-# PUT /vehicles/{id} → 200 { vehicle summary }
 PUT {{host}}/vehicles/{{vehicleId}}
 Content-Type: application/json
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 {
   "make": "Toyota",
@@ -183,18 +188,17 @@ Authorization: Bearer {{accessToken}}
 ###
 
 ### Delete vehicle  (Admin)
-# DELETE /vehicles/{id} → 204  (409 if vehicle has active bookings)
+# 409 if vehicle has active bookings
 DELETE {{host}}/vehicles/{{vehicleId}}
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminToken}}
 
 
 ### ─────────────────────────────────────────────
 ###  BOOKINGS
 ### ─────────────────────────────────────────────
 
-### Create booking  (authenticated — Customer or Admin)
-# POST /bookings → 201 { "id", "vehicleId", "vehicleMake", "vehicleModel", "vehicleYear", "customerId", "pickupAt", "returnAt", "status", "totalAmount", "notes", "createdAt" }
-# Returns 409 if vehicle is not available for the selected dates
+### Create booking
+# @name createBooking
 POST {{host}}/bookings
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
@@ -208,24 +212,21 @@ Authorization: Bearer {{accessToken}}
 
 ###
 
-### List bookings  (authenticated — Customers see own; Admins see all)
-# GET /bookings → 200 [ { booking }, ... ]  ordered by createdAt DESC
+### List bookings  (Customers see own; Admins see all)
 GET {{host}}/bookings
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 
 ###
 
-### Get booking by ID  (authenticated — own booking or Admin)
-# GET /bookings/{id} → 200 { booking }  (403 if not owner and not Admin)
+### Get booking by ID
 GET {{host}}/bookings/{{bookingId}}
 Accept: application/json
 Authorization: Bearer {{accessToken}}
 
 ###
 
-### Cancel booking  (authenticated — own booking or Admin)
-# POST /bookings/{id}/cancel → 204
-# Returns 400 if booking is Active, Completed, or already Cancelled
+### Cancel booking
+# 400 if booking is Active, Completed, or already Cancelled
 POST {{host}}/bookings/{{bookingId}}/cancel
 Authorization: Bearer {{accessToken}}
