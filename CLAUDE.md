@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack
 
-- **Backend:** .NET 10 (FastEndpoints, EF Core Code-First, PostgreSQL + PostGIS)
+- **Backend:** .NET 10 (FastEndpoints, EF Core Code-First, SQL Server)
 - **Frontend:** React Native via Expo (bare workflow)
 - **Background jobs:** Hangfire
 - **Storage:** S3 or Cloudinary (store keys, never full URLs)
@@ -90,9 +90,9 @@ src/
 
 ## Key Architectural Rules
 
-- **Booking overlap prevention:** enforce via PostgreSQL `EXCLUDE` constraint using `tstzrange(pickup_at, return_at)` on `vehicle_id`. Application-level checks alone are not safe under concurrent load.
+- **Booking overlap prevention:** enforce via a serializable transaction + application-level overlap query on `vehicle_id` and `(pickup_at, return_at)`. Use `IsolationLevel.Serializable` to prevent concurrent double-bookings.
 - **Image storage:** store S3/Cloudinary keys only, never full URLs. Resolve at read time.
-- **Timezones:** always store `timestamptz` (UTC) in the DB; format for display with `dayjs/timezone`.
+- **Timezones:** always store `datetime2` (UTC) in the DB; format for display with `dayjs/timezone`.
 - **Soft deletes:** all core entities use a `deleted_at` column — never hard-delete vehicles, bookings, or users.
 - **Payment gateway:** implement `IPaymentGateway` interface first so Stripe / PayMongo can be swapped without touching feature slices.
 - **Server state vs UI state:** React Query owns all server/API data. Zustand is for auth state and UI preferences only.
@@ -145,6 +145,16 @@ CarRental.Infrastructure/
 └── BackgroundJobs/         # Hangfire job definitions
 ```
 
+## EF Commands
+
+```bash
+# Add a new migration
+dotnet ef migrations add <Name> --project src/CarRental.Infrastructure --startup-project src/CarRental.Api --output-dir Persistence/Migrations
+
+# Apply migrations to the database
+dotnet ef database update --project src/CarRental.Infrastructure --startup-project src/CarRental.Api
+```
+
 ---
 
 ## Core Frontend Dependencies
@@ -172,3 +182,9 @@ CarRental.Infrastructure/
 | 2 — Payments & Notifications | Stripe/PayMongo, FCM push, email, KYC/license verification |
 | 3 — Rental Lifecycle | Inspections, digital contract/e-sign, pickup/return flow, add-ons, reviews |
 | 4 — Admin & Analytics | Admin dashboard, pricing engine, fleet maintenance, revenue reports |
+
+
+
+## Naming Conventions
+Table naming should be pascal case e.g UserRoles,UserClaims,UserLogins,RoleClaims,UserTokens
+

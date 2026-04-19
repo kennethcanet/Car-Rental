@@ -15,10 +15,7 @@ public static class InfrastructureServiceExtensions
     {
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseNpgsql(
-                configuration.GetConnectionString("DefaultConnection"),
-                npgsql => npgsql.UseNetTopologySuite()
-            );
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
         });
 
         services.AddIdentity<AppUser, AppRole>(options =>
