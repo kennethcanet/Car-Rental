@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Stack
 
-- **Backend:** .NET (FastEndpoints, EF Core Code-First, PostgreSQL + PostGIS)
+- **Backend:** .NET 10 (FastEndpoints, EF Core Code-First, PostgreSQL + PostGIS)
 - **Frontend:** React Native via Expo (bare workflow)
 - **Background jobs:** Hangfire
 - **Storage:** S3 or Cloudinary (store keys, never full URLs)
@@ -19,14 +19,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 CarRental/
-├── BackEnd/    # .NET solution
+├── BackEnd/    # .NET 10 solution
 └── FrontEnd/   # Expo React Native app
 ```
 
 ### Backend — solution structure
 
+Solution file: `BackEnd/API/API.slnx`
+
 ```
-CarRental.sln
+API.slnx
 └── src/
     ├── CarRental.Api/          # FastEndpoints host — vertical slice features
     ├── CarRental.Domain/       # Entities, enums, value objects
@@ -99,16 +101,24 @@ src/
 
 ## Build Commands
 
-> Commands will be added here once projects are scaffolded.
+Run all commands from `BackEnd/API/` (solution root).
 
-### Backend (expected)
+### Backend
 
 ```bash
 dotnet build
 dotnet test
 dotnet run --project src/CarRental.Api
-dotnet ef migrations add <Name> --project src/CarRental.Infrastructure
-dotnet ef database update --project src/CarRental.Infrastructure
+
+# Migrations (startup project needed for IDesignTimeDbContextFactory)
+dotnet ef migrations add <Name> \
+  --project src/CarRental.Infrastructure \
+  --startup-project src/CarRental.Api \
+  --output-dir Persistence/Migrations
+
+dotnet ef database update \
+  --project src/CarRental.Infrastructure \
+  --startup-project src/CarRental.Api
 ```
 
 ### Frontend (expected)
