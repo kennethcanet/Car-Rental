@@ -1,3 +1,10 @@
+export interface PickedLocation {
+  latitude: number;
+  longitude: number;
+  /** Human-readable address from reverse geocoding */
+  address: string;
+}
+
 export interface User {
   id: string;
   email: string;

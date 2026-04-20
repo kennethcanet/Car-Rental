@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "@/shared/theme";
 
-export default function ProfileScreen() {
+export default function CatalogScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Profile</Text>
+      <Text style={styles.text}>Catalog</Text>
     </View>
   );
 }

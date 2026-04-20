@@ -96,7 +96,7 @@ Content-Type: application/json
 Authorization: Bearer {{adminToken}}
 
 {
-  "name": "Manila Airport Branch 2",
+  "name": "Manila Airport Branch 3",
   "address": "NAIA Terminal 3, Pasay",
   "city": "Manila",
   "country": "Philippines"

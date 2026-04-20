@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
+    .WithOrigins("http://localhost:8081", "http://localhost:8082")
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials()));
+
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddAuthenticationJwtBearer(
@@ -27,7 +33,8 @@ await SeedRolesAsync(app);
 if (app.Environment.IsDevelopment())
     await SeedDevAdminAsync(app);
 
-app.UseAuthentication()
+app.UseCors()
+   .UseAuthentication()
    .UseAuthorization()
    .UseFastEndpoints()
    .UseSwaggerGen();
