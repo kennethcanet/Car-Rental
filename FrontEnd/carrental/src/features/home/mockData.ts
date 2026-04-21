@@ -112,19 +112,22 @@ export const MOCK_VEHICLES: VehicleWithSchedule[] = [
 
 export interface SearchCriteria {
   /** Map-picked origin point. Location filtering is handled by the real API;
-   *  mock data ignores coordinates and only filters by date + category. */
+   *  mock data ignores coordinates and only filters by date + category + passengers. */
   origin: PickedLocation | null;
   destination: PickedLocation | null;
   date: Date | null;
   category: HomeCategory;
+  /** Minimum seat capacity required. 0 = no filter. */
+  passengers: number;
 }
 
 export function filterVehicles(
   vehicles: VehicleWithSchedule[],
-  { date, category }: SearchCriteria,
+  { date, category, passengers }: SearchCriteria,
 ): VehicleWithSchedule[] {
   return vehicles.filter((v) => {
     if (category !== "All" && v.type !== category) return false;
+    if (passengers > 0 && v.seats < passengers) return false;
     if (date) {
       const d = date.getTime();
       const from = new Date(v.availableFrom).getTime();
