@@ -1,14 +1,42 @@
 using System.Security.Cryptography;
 using System.Text;
-using CarRental.Domain.Entities;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Entities;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using FastEndpoints.Security;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace CarRental.Api.Features.Auth.Login;
+
+public class LoginRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public class LoginResponse
+{
+    public string AccessToken { get; set; } = string.Empty;
+    public string RefreshToken { get; set; } = string.Empty;
+    public DateTime AccessTokenExpiry { get; set; }
+    public string UserId { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public IList<string> Roles { get; set; } = new List<string>();
+}
+
+public class LoginValidator : Validator<LoginRequest>
+{
+    public LoginValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.Password).NotEmpty();
+    }
+}
 
 public class LoginEndpoint : Endpoint<LoginRequest, LoginResponse>
 {

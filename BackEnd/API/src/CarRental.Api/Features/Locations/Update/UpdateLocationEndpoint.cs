@@ -1,8 +1,29 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Locations.Update;
+
+public class UpdateLocationRequest
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+}
+
+public class UpdateLocationValidator : Validator<UpdateLocationRequest>
+{
+    public UpdateLocationValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Address).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.City).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Country).NotEmpty().MaximumLength(100);
+    }
+}
 
 public class UpdateLocationEndpoint : Endpoint<UpdateLocationRequest, LocationResponse>
 {

@@ -30,10 +30,7 @@ Solution file: `BackEnd/API/API.slnx`
 ```
 API.slnx
 └── src/
-    ├── CarRental.Api/          # FastEndpoints host — vertical slice features
-    ├── CarRental.Domain/       # Entities, enums, value objects
-    ├── CarRental.Infrastructure/  # EF Core, repos, external service adapters
-    └── CarRental.Application/  # Shared interfaces and services
+    └── CarRental.Api/          # Single project — features, domain, persistence
 └── tests/
     ├── CarRental.Api.Tests/
     └── CarRental.Integration.Tests/
@@ -46,15 +43,13 @@ Every feature is self-contained. No shared service layer — each slice owns its
 ```
 Features/Bookings/
 ├── Create/
-│   ├── CreateBookingRequest.cs
-│   ├── CreateBookingResponse.cs
-│   ├── CreateBookingEndpoint.cs    # FastEndpoint
-│   ├── CreateBookingValidator.cs   # FluentValidation
-│   └── CreateBookingHandler.cs     # Business logic
+│   └── CreateBookingEndpoint.cs    # Request, Validator, and Endpoint inlined
 ├── GetById/
+│   └── GetBookingByIdEndpoint.cs
 ├── List/
+│   └── ListBookingsEndpoint.cs
 ├── Cancel/
-├── Confirm/
+│   └── CancelBookingEndpoint.cs
 └── BookingMapper.cs
 ```
 
@@ -110,14 +105,14 @@ dotnet build
 dotnet test
 dotnet run --project src/CarRental.Api
 
-# Migrations (startup project needed for IDesignTimeDbContextFactory)
+# Migrations
 dotnet ef migrations add <Name> \
-  --project src/CarRental.Infrastructure \
+  --project src/CarRental.Api \
   --startup-project src/CarRental.Api \
   --output-dir Persistence/Migrations
 
 dotnet ef database update \
-  --project src/CarRental.Infrastructure \
+  --project src/CarRental.Api \
   --startup-project src/CarRental.Api
 ```
 
@@ -131,28 +126,30 @@ npx expo start --ios
 
 ---
 
-## Infrastructure Layer
+## Project Layout (CarRental.Api)
 
 ```
-CarRental.Infrastructure/
+CarRental.Api/
+├── Domain/
+│   ├── Entities/           # AppUser, AppRole, Location, Vehicle, Booking, etc.
+│   └── Enums/              # VehicleCategory, BookingStatus
 ├── Persistence/
 │   ├── AppDbContext.cs
+│   ├── AppDbContextFactory.cs
 │   ├── Configurations/     # IEntityTypeConfiguration per entity
 │   └── Migrations/
-├── Storage/                # S3 / Cloudinary adapter
-├── Payments/               # IPaymentGateway + Stripe/PayMongo adapters
-├── Notifications/          # FCM, email (SendGrid/Mailgun)
-└── BackgroundJobs/         # Hangfire job definitions
+├── Features/               # Vertical slices (Auth, Locations, Vehicles, Bookings)
+└── Program.cs
 ```
 
 ## EF Commands
 
 ```bash
 # Add a new migration
-dotnet ef migrations add <Name> --project src/CarRental.Infrastructure --startup-project src/CarRental.Api --output-dir Persistence/Migrations
+dotnet ef migrations add <Name> --project src/CarRental.Api --startup-project src/CarRental.Api --output-dir Persistence/Migrations
 
 # Apply migrations to the database
-dotnet ef database update --project src/CarRental.Infrastructure --startup-project src/CarRental.Api
+dotnet ef database update --project src/CarRental.Api --startup-project src/CarRental.Api
 ```
 
 ---

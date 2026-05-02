@@ -1,4 +1,4 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,9 +1,14 @@
-using CarRental.Domain.Enums;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Enums;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Bookings.Cancel;
+
+public class CancelBookingRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class CancelBookingEndpoint : Endpoint<CancelBookingRequest>
 {

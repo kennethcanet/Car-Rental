@@ -1,4 +1,4 @@
-using CarRental.Domain.Entities;
+using CarRental.Api.Domain.Entities;
 
 namespace CarRental.Api.Features.Locations;
 

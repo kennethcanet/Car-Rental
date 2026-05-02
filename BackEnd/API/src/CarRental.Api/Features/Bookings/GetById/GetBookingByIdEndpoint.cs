@@ -1,8 +1,13 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Bookings.GetById;
+
+public class GetBookingByIdRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class GetBookingByIdEndpoint : Endpoint<GetBookingByIdRequest, BookingResponse>
 {

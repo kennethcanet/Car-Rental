@@ -1,8 +1,13 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Vehicles.GetById;
+
+public class GetVehicleByIdRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class GetVehicleByIdEndpoint : Endpoint<GetVehicleByIdRequest, VehicleDetailResponse>
 {

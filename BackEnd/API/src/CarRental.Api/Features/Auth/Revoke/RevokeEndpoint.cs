@@ -1,10 +1,24 @@
 using System.Security.Cryptography;
 using System.Text;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Auth.Revoke;
+
+public class RevokeRequest
+{
+    public string RefreshToken { get; set; } = string.Empty;
+}
+
+public class RevokeValidator : Validator<RevokeRequest>
+{
+    public RevokeValidator()
+    {
+        RuleFor(x => x.RefreshToken).NotEmpty();
+    }
+}
 
 public class RevokeEndpoint : Endpoint<RevokeRequest>
 {

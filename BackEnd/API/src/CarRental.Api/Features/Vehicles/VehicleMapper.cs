@@ -1,5 +1,5 @@
+using CarRental.Api.Domain.Entities;
 using CarRental.Api.Features.Locations;
-using CarRental.Domain.Entities;
 
 namespace CarRental.Api.Features.Vehicles;
 

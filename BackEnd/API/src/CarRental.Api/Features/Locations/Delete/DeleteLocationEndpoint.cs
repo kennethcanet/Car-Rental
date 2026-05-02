@@ -1,8 +1,13 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Locations.Delete;
+
+public class DeleteLocationRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteLocationEndpoint : Endpoint<DeleteLocationRequest>
 {

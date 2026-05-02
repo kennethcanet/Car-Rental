@@ -1,11 +1,33 @@
 using System.Data;
-using CarRental.Domain.Entities;
-using CarRental.Domain.Enums;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Entities;
+using CarRental.Api.Domain.Enums;
+using CarRental.Api.Persistence;
 using FastEndpoints;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Bookings.Create;
+
+public class CreateBookingRequest
+{
+    public Guid VehicleId { get; set; }
+    public DateTime PickupAt { get; set; }
+    public DateTime ReturnAt { get; set; }
+    public string? Notes { get; set; }
+}
+
+public class CreateBookingValidator : Validator<CreateBookingRequest>
+{
+    public CreateBookingValidator()
+    {
+        RuleFor(x => x.VehicleId).NotEmpty();
+        RuleFor(x => x.PickupAt).NotEmpty().GreaterThan(DateTime.UtcNow).WithMessage("Pickup date must be in the future.");
+        RuleFor(x => x.ReturnAt)
+            .NotEmpty()
+            .GreaterThan(x => x.PickupAt).WithMessage("Return date must be after pickup date.");
+        RuleFor(x => x.Notes).MaximumLength(1000).When(x => x.Notes is not null);
+    }
+}
 
 public class CreateBookingEndpoint : Endpoint<CreateBookingRequest, BookingResponse>
 {

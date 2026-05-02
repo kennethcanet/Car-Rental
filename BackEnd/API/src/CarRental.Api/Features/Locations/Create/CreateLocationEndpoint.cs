@@ -1,8 +1,28 @@
-using CarRental.Domain.Entities;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Entities;
+using CarRental.Api.Persistence;
 using FastEndpoints;
+using FluentValidation;
 
 namespace CarRental.Api.Features.Locations.Create;
+
+public class CreateLocationRequest
+{
+    public string Name { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
+    public string City { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+}
+
+public class CreateLocationValidator : Validator<CreateLocationRequest>
+{
+    public CreateLocationValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
+        RuleFor(x => x.Address).NotEmpty().MaximumLength(500);
+        RuleFor(x => x.City).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Country).NotEmpty().MaximumLength(100);
+    }
+}
 
 public class CreateLocationEndpoint : Endpoint<CreateLocationRequest, LocationResponse>
 {

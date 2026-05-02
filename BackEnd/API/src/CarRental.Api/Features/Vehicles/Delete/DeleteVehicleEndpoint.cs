@@ -1,9 +1,14 @@
-using CarRental.Domain.Enums;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Enums;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Vehicles.Delete;
+
+public class DeleteVehicleRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class DeleteVehicleEndpoint : Endpoint<DeleteVehicleRequest>
 {

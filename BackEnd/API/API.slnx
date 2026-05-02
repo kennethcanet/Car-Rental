@@ -1,9 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/CarRental.Api/CarRental.Api.csproj" />
-    <Project Path="src/CarRental.Application/CarRental.Application.csproj" />
-    <Project Path="src/CarRental.Domain/CarRental.Domain.csproj" />
-    <Project Path="src/CarRental.Infrastructure/CarRental.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/CarRental.Api.Tests/CarRental.Api.Tests.csproj" />

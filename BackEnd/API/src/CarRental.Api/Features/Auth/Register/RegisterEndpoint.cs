@@ -1,9 +1,39 @@
-using CarRental.Domain.Entities;
+using CarRental.Api.Domain.Entities;
 using FastEndpoints;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 
 namespace CarRental.Api.Features.Auth.Register;
+
+public class RegisterRequest
+{
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public class RegisterResponse
+{
+    public string UserId { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+}
+
+public class RegisterValidator : Validator<RegisterRequest>
+{
+    public RegisterValidator()
+    {
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(8)
+            .Matches("[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
+            .Matches("[0-9]").WithMessage("Password must contain at least one digit.");
+    }
+}
 
 public class RegisterEndpoint : Endpoint<RegisterRequest, RegisterResponse>
 {

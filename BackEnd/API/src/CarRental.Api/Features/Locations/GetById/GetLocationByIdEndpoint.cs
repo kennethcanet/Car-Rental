@@ -1,8 +1,13 @@
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarRental.Api.Features.Locations.GetById;
+
+public class GetLocationByIdRequest
+{
+    public Guid Id { get; set; }
+}
 
 public class GetLocationByIdEndpoint : Endpoint<GetLocationByIdRequest, LocationResponse>
 {

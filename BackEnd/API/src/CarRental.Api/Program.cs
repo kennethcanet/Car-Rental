@@ -1,9 +1,10 @@
-using CarRental.Domain.Entities;
-using CarRental.Infrastructure;
+using CarRental.Api.Domain.Entities;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using FastEndpoints.Security;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +14,25 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .AllowAnyMethod()
     .AllowCredentials()));
 
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddIdentityCore<AppUser>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = false;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
+})
+.AddRoles<AppRole>()
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
 builder.Services
-    .AddInfrastructure(builder.Configuration)
     .AddAuthenticationJwtBearer(
         s => s.SigningKey = builder.Configuration["Jwt:SigningKey"]!,
         o =>

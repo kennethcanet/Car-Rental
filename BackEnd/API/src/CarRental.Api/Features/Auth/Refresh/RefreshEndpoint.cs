@@ -1,14 +1,35 @@
 using System.Security.Cryptography;
 using System.Text;
-using CarRental.Domain.Entities;
-using CarRental.Infrastructure.Persistence;
+using CarRental.Api.Domain.Entities;
+using CarRental.Api.Persistence;
 using FastEndpoints;
 using FastEndpoints.Security;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace CarRental.Api.Features.Auth.Refresh;
+
+public class RefreshRequest
+{
+    public string RefreshToken { get; set; } = string.Empty;
+}
+
+public class RefreshResponse
+{
+    public string AccessToken { get; set; } = string.Empty;
+    public string RefreshToken { get; set; } = string.Empty;
+    public DateTime AccessTokenExpiry { get; set; }
+}
+
+public class RefreshValidator : Validator<RefreshRequest>
+{
+    public RefreshValidator()
+    {
+        RuleFor(x => x.RefreshToken).NotEmpty();
+    }
+}
 
 public class RefreshEndpoint : Endpoint<RefreshRequest, RefreshResponse>
 {
